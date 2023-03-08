@@ -1,0 +1,22 @@
+<div class="form-group w-90 vh-100 d-flex justify-content-around align-items-center bg-light" id="formGroup">
+    <form [formGroup]="loginForm">
+        <div class="welcome-message">
+            <h2 class="text-center">Dobrodošli!</h2>
+        </div>
+        <div class="w-100 my-5">
+            <input type="email" name="email" placeholder="Unesite e-mail..." formControlName="email" class="form-control">
+            <div *ngIf="(loginForm.controls['email'].invalid) && (loginForm.controls['email'].dirty)">
+                <p class="text-center">Unesite ispravnu e-mail adresu!</p>
+            </div>
+        </div>
+        <div class="w-100 my-5">
+            <input type="password" name="password" placeholder="Unesite lozinku..." formControlName="password" class="form-control">
+            <div *ngIf="(loginForm.controls['password'].invalid) && (loginForm.controls['password'].dirty)">
+                <div>Lozinka nije važeća, ponovite unos</div>
+            </div>
+        </div>
+        <div class="submit my-3" >
+            <button id="btn" [disabled]="!loginForm.valid" routerLink="/table" class="btn btn-success w-100" (click)="Submit()">Prijava</button>
+        </div>
+    </form>
+</div>

@@ -1,0 +1,144 @@
+<!-- HEADER -->
+<div class="w-100 h-auto bg-light">
+
+    <!-- ADD PERSON -->
+    <div class="w-100 h-auto">
+        <form id="inputForm" [formGroup]="addPersonForm">
+            <div class="row py-2 px-1">
+                <div class="col">
+                    <input type="text" id="nameInput" placeholder="Unesite ime..." formControlName="name" #name class="form-control form-control-sm">
+                </div>
+                <div class="col">
+                    <input type="text" id="lastNameInput" placeholder="Unesite prezime..." formControlName="lastName" #lastName class="form-control form-control-sm">
+                </div>
+            </div>
+            <div class="row py-2 px-1">
+                <div class="col">
+                    <select formControlName="sex" #sex class="form-control form-control-sm">
+                        <option>male</option>
+                        <option>female</option>
+                    </select>
+                </div>
+                <div class="col">
+                    <input type="text" id="phoneInput" placeholder="Unesite broj telefona..." formControlName="phone" #phone class="form-control form-control-sm">
+                </div>
+            </div>
+            <div class="row py-2 px-1">
+                <div class="col">
+                    <input type="text" id="mailInput" placeholder="Unesite mail..." formControlName="mail" #mail class="form-control form-control-sm">
+                </div>
+                <div class="col">
+                    <textarea placeholder="Unesite napomenu..." formControlName="note" #note class="form-control form-control-sm"></textarea> 
+                </div>  
+            </div>        
+            <div class="d-flex justify-content-center align-items-center py-2">
+                <button id="submitBtn" [disabled]="!addPersonForm.valid" (click)="AddPerson(name.value, lastName.value, sex.value, phone.value, mail.value, note.value);name.value='';lastName.value='';sex.value='male';phone.value='';mail.value='';note.value='';" class="btn btn-primary">Dodaj kontakt</button>
+            </div>       
+        </form>
+    </div>
+
+    <!-- RESULTS, SORTING, SEARCH BAR -->
+    <div class="row d-flex justify-content-around align-items-center my-2 text-center">
+        <div class="col-4">
+            <label for="selectValue">Prikaz rezultata:</label>
+            <select id="selectValue" (change)="changeRowSize($event)" class="form-control form-control-sm">
+                <option value="5" >5</option>
+                <option value="10" >10</option>
+                <option value="15" >15</option>
+                <option value="20" >20</option>
+            </select>
+        </div>
+        <div class="col-4">
+            <label for id="sortPerson">Sortiranje:</label>
+            <select (change)="SortData($event)" class="form-control form-control-sm">
+                <option value="all">All</option>
+                <option value="female">F</option>
+                <option value="male">M</option>
+            </select>
+        </div>
+    </div>
+    <div class="row d-flex justify-content-center align-items-center p-3">
+        <div class="col-8">
+            <input type="text" id="searchBar" placeholder="Pretražite po imenu, prezimenu, email-u,..." #search [(ngModel)]="searchInput" class="form-control form-control-sm">
+        </div>
+    </div>
+
+    <!-- EDIT PERSON -->
+    <div class="editDiv w-100 h-auto" *ngIf="selectedPerson" [class.hide]="!editPersonActive">
+        <h3 class="text-center">Uređivanje</h3>
+        <div class="row py-2 px-1">
+            <div class="col">
+                <input type="text" [(ngModel)]="selectedPerson.ID" class="form-control form-control-sm">
+            </div>
+            <div class="col">
+                <input type="text" [(ngModel)]="selectedPerson.name" class="form-control form-control-sm">
+            </div>
+        </div>
+        <div class="row py-2 px-1">
+            <div class="col">
+                <input type="text" [(ngModel)]="selectedPerson.lastName" class="form-control form-control-sm">
+            </div>
+            <div class="col">
+                <select [(ngModel)]="selectedPerson.sex" class="form-control form-control-sm">
+                    <option value="male">male</option>
+                    <option value="female">female</option>
+                </select>
+            </div>
+        </div>
+        <div class="row py-2 px-1">
+            <div class="col">
+                <input type="text" [(ngModel)]="selectedPerson.phoneNumber" class="form-control form-control-sm">
+            </div>
+            <div class="col">
+                <input type="text" [(ngModel)]="selectedPerson.email" class="form-control form-control-sm">
+            </div>
+        </div>
+        <div class="row py-2 px-1">
+            <div class="col">
+                <input type="text" [(ngModel)]="selectedPerson.note" class="form-control form-control-sm">
+            </div>
+            <div class="col">
+                <button class="btn btn-primary" (click)="CloseEditForm()">Potvrdi</button>
+            </div>
+        </div>
+    </div> 
+
+    <!-- DELETE PERSON MESSAGE -->
+    <div class="w-100 h-auto py-2 px-1" *ngIf="selectedDeletePerson" [class.hide]="deletePersonActive">
+        <p class="text-center">{{message}}</p>
+        <div class="d-flex justify-content-center align-items-center">
+            <button class="btn btn-primary" (click)="DeletePersonConfirm()">Potvrdi</button>
+        </div>
+    </div>   
+</div> 
+
+<!-- TABLE -->
+<div class="table-responsive" style="line-height: 0.8;">
+    <table class="table table-sm table-white table-bordered table-hover ">
+        <thead class="table-light text-center align-middle text-muted fs-6">
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Ime</th>
+                <th scope="col">Prezime</th>
+                <th scope="col">Spol</th>
+                <th scope="col">Broj telefona</th>
+                <th scope="col">Email</th>
+                <th scope="col">Bilješke</th>
+                <th scope="col" colspan="2">Akcije</th>
+            </tr>
+        </thead>
+        <tbody class="text-center align-middle fs-6 text-dark">
+            <tr *ngFor="let mockPerson of mockPersonData | searchPipe: searchInput">
+                <th scope="row" class="text-secondary">{{mockPerson.ID}}</th>
+                <td>{{mockPerson.name}}</td>
+                <td>{{mockPerson.lastName}}</td>
+                <td>{{mockPerson.sex}}</td>
+                <td>{{mockPerson.phoneNumber}}</td>
+                <td>{{mockPerson.email}}</td>
+                <td>{{mockPerson.note}}</td>
+                <td><button class="btn btn-dark" (click)="EditPerson(mockPerson)">Uredi</button></td>
+                <td><button class="btn btn-danger" (click)="DeletePerson(mockPerson)">Izbriši</button></td>
+            </tr>
+        </tbody>       
+    </table>
+</div>
